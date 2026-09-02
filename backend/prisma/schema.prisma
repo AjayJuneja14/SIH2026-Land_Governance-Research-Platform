@@ -1,0 +1,92 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  phone        String    @unique
+  email        String?   @unique
+  password     String
+  role         String    @default("BUYER") // FARMER, BUYER, ADMIN
+  location     String
+  language     String    @default("en")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  produce      Produce[] @relation("FarmerProduce")
+  orders       Order[]   @relation("BuyerOrders")
+
+  @@map("users")
+}
+
+model Hub {
+  id            String    @id @default(uuid())
+  name          String
+  location      String
+  lat           Float
+  lng           Float
+  contactNumber String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  produce       Produce[]
+  orders        Order[]
+
+  @@map("hubs")
+}
+
+model Produce {
+  id           String    @id @default(uuid())
+  farmerId     String
+  name         String
+  category     String    // Vegetables, Fruits, Grains, Pulses, Spices, Dairy
+  quantity     Float
+  unit         String    // kg, quintal, crate, litre, piece, dozen
+  pricePerUnit Float     // Farmer's base price in ₹
+  qualityGrade String    // Grade A, Grade B, Grade C, Organic Certified
+  harvestDate  DateTime
+  imageUrl     String?
+  status       String    @default("AVAILABLE") // AVAILABLE, SOLD, RESERVED
+  hubId        String?
+  description  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  farmer       User      @relation("FarmerProduce", fields: [farmerId], references: [id], onDelete: Cascade)
+  hub          Hub?      @relation(fields: [hubId], references: [id], onDelete: SetNull)
+  orders       Order[]
+
+  @@map("produce")
+}
+
+model Order {
+  id              String   @id @default(uuid())
+  buyerId         String
+  produceId       String
+  quantity        Float
+  unitPrice       Float
+  totalPrice      Float
+  status          String   @default("PENDING") // PENDING, CONFIRMED, PICKED_UP, DELIVERED, CANCELLED
+  deliveryAddress String
+  hubId           String?
+  paymentStatus   String   @default("PENDING") // PENDING, PAID, CASH_ON_DELIVERY
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  buyer           User     @relation("BuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
+  produce         Produce  @relation(fields: [produceId], references: [id], onDelete: Restrict)
+  hub             Hub?     @relation(fields: [hubId], references: [id], onDelete: SetNull)
+
+  @@map("orders")
+}
