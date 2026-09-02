@@ -3,17 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { api } from '../../lib/api';
 import { Order, OrderStatus } from '../../lib/types';
 import { formatCurrency, formatDate, getStatusBadgeClass } from '../../lib/utils';
 import {
   Layers,
-  Truck,
-  CheckCircle2,
-  Clock,
-  MapPin,
   Calendar,
-  AlertCircle,
+  MapPin,
   ArrowRight,
   Package,
   XCircle,
@@ -21,6 +18,7 @@ import {
 
 export default function OrdersPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -80,11 +78,11 @@ export default function OrdersPage() {
         <div>
           <div className="flex items-center gap-2 text-emerald-200 text-xs font-bold uppercase tracking-wider mb-1">
             <Layers className="w-4 h-4 text-emerald-300" />
-            Direct Order Tracking
+            {t('orders.title')}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black">My Farm Purchases</h1>
+          <h1 className="text-2xl sm:text-3xl font-black">{t('orders.title')}</h1>
           <p className="text-xs sm:text-sm text-emerald-100 max-w-xl mt-1">
-            Real-time status of your direct farmer harvest orders from pickup hub to your doorstep.
+            {t('orders.subtitle')}
           </p>
         </div>
 
@@ -92,7 +90,7 @@ export default function OrdersPage() {
           href="/marketplace"
           className="px-5 py-2.5 bg-white text-emerald-800 hover:bg-emerald-50 font-bold text-xs rounded-xl shadow transition flex items-center gap-2 shrink-0"
         >
-          Browse Marketplace <ArrowRight className="w-3.5 h-3.5" />
+          {t('cart.browseButton')} <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
 
@@ -108,15 +106,15 @@ export default function OrdersPage() {
           <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
             <Package className="w-8 h-8" />
           </div>
-          <h3 className="text-base font-bold text-gray-900">No orders placed yet</h3>
+          <h3 className="text-base font-bold text-gray-900">{t('orders.noOrdersTitle')}</h3>
           <p className="text-xs text-gray-500 max-w-sm mx-auto">
-            You have not placed any direct farmer harvest orders yet. Browse our marketplace to support local farmers!
+            {t('orders.noOrdersDesc')}
           </p>
           <Link
             href="/marketplace"
             className="mt-2 inline-block px-5 py-2.5 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow hover:bg-emerald-700 transition"
           >
-            Start Shopping
+            {t('checkout.continueShopping')}
           </Link>
         </div>
       ) : (
@@ -147,7 +145,7 @@ export default function OrdersPage() {
                     </div>
                     <div className="text-xs text-gray-500 flex items-center gap-3">
                       <span className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-gray-400" /> Placed {formatDate(order.createdAt)}
+                        <Calendar className="w-3.5 h-3.5 text-gray-400" /> {formatDate(order.createdAt)}
                       </span>
                       <span>•</span>
                       <span className="flex items-center gap-1">
@@ -157,7 +155,7 @@ export default function OrdersPage() {
                   </div>
 
                   <div className="text-left sm:text-right">
-                    <div className="text-xs text-gray-400 font-medium">Total Amount</div>
+                    <div className="text-xs text-gray-400 font-medium">{t('checkout.totalAmount')}</div>
                     <div className="text-lg font-black text-emerald-700">
                       {formatCurrency(order.totalPrice)}
                     </div>
@@ -178,7 +176,7 @@ export default function OrdersPage() {
                           1
                         </div>
                         <span className={`text-[11px] block font-bold ${step >= 1 ? 'text-gray-900' : 'text-gray-400'}`}>
-                          Placed
+                          {t('orders.timelineStep1')}
                         </span>
                       </div>
 
@@ -192,7 +190,7 @@ export default function OrdersPage() {
                           2
                         </div>
                         <span className={`text-[11px] block font-bold ${step >= 2 ? 'text-gray-900' : 'text-gray-400'}`}>
-                          Confirmed
+                          {t('orders.timelineStep2')}
                         </span>
                       </div>
 
@@ -206,7 +204,7 @@ export default function OrdersPage() {
                           3
                         </div>
                         <span className={`text-[11px] block font-bold ${step >= 3 ? 'text-gray-900' : 'text-gray-400'}`}>
-                          Hub Picked
+                          {t('orders.timelineStep3')}
                         </span>
                       </div>
 
@@ -220,7 +218,7 @@ export default function OrdersPage() {
                           4
                         </div>
                         <span className={`text-[11px] block font-bold ${step >= 4 ? 'text-gray-900' : 'text-gray-400'}`}>
-                          Delivered
+                          {t('orders.timelineStep4')}
                         </span>
                       </div>
                     </div>

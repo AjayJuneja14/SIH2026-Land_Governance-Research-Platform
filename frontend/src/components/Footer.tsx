@@ -2,9 +2,12 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Sprout, ShieldCheck, HeartHandshake, Truck, Phone, Mail, MapPin } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { Sprout, ShieldCheck, Phone, Mail, MapPin } from 'lucide-react';
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-gray-950 text-gray-300 pt-12 pb-8 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,8 +23,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-xs text-gray-400 leading-relaxed">
-              Empowering Indian farmers by enabling direct marketplace access to consumers, institutions, and retailers. 
-              Zero commission middlemen, absolute price transparency.
+              {t('footer.tagline')}
             </p>
             <div className="flex items-center gap-3 pt-2 text-xs text-emerald-400 font-semibold">
               <ShieldCheck className="w-4 h-4" /> Direct Mandi Disintermediation
@@ -30,26 +32,26 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-3">Marketplace</h4>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-3">{t('nav.marketplace')}</h4>
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/marketplace?category=Vegetables" className="hover:text-emerald-400 transition">
-                  Fresh Vegetables
+                  {t('cat.vegetables')}
                 </Link>
               </li>
               <li>
                 <Link href="/marketplace?category=Fruits" className="hover:text-emerald-400 transition">
-                  Seasonal Fruits & Mangoes
+                  {t('cat.fruits')}
                 </Link>
               </li>
               <li>
                 <Link href="/marketplace?category=Grains" className="hover:text-emerald-400 transition">
-                  Basmati & Wheat Grains
+                  {t('cat.grains')}
                 </Link>
               </li>
               <li>
                 <Link href="/marketplace?category=Spices" className="hover:text-emerald-400 transition">
-                  Farm Direct Spices
+                  {t('cat.spices')}
                 </Link>
               </li>
             </ul>

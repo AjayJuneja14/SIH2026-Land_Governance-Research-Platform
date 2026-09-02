@@ -5,10 +5,10 @@ import { useSearchParams } from 'next/navigation';
 import { api } from '../../lib/api';
 import { Produce } from '../../lib/types';
 import ProduceCard from '../../components/ProduceCard';
+import { useLanguage } from '../../context/LanguageContext';
 import {
   Search,
   Filter,
-  SlidersHorizontal,
   RotateCcw,
   Sparkles,
   MapPin,
@@ -21,6 +21,7 @@ function MarketplaceContent() {
   const initialCategory = searchParams.get('category') || 'ALL';
   const initialSearch = searchParams.get('search') || '';
 
+  const { t } = useLanguage();
   const [produceList, setProduceList] = useState<Produce[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,9 +33,26 @@ function MarketplaceContent() {
   const [maxPrice, setMaxPrice] = useState<number | ''>('');
   const [sortBy, setSortBy] = useState('harvest_recent');
 
-  const categories = ['ALL', 'Vegetables', 'Fruits', 'Grains', 'Pulses', 'Spices', 'Dairy'];
-  const locations = ['All Locations', 'Nashik', 'Pune', 'Karnal', 'Shimla', 'Guntur', 'Ratnagiri', 'Noida'];
-  const grades = ['ALL', 'Grade A', 'Organic Certified', 'Grade B', 'Export Quality'];
+  const categories = [
+    { key: 'ALL', label: t('cat.all') },
+    { key: 'Vegetables', label: t('cat.vegetables') },
+    { key: 'Fruits', label: t('cat.fruits') },
+    { key: 'Grains', label: t('cat.grains') },
+    { key: 'Pulses', label: t('cat.pulses') },
+    { key: 'Spices', label: t('cat.spices') },
+    { key: 'Dairy', label: t('cat.dairy') },
+  ];
+
+  const locations = [
+    { key: '', label: t('market.allLocations') },
+    { key: 'Nashik', label: 'Nashik' },
+    { key: 'Pune', label: 'Pune' },
+    { key: 'Karnal', label: 'Karnal' },
+    { key: 'Shimla', label: 'Shimla' },
+    { key: 'Guntur', label: 'Guntur' },
+    { key: 'Ratnagiri', label: 'Ratnagiri' },
+    { key: 'Noida', label: 'Noida' },
+  ];
 
   useEffect(() => {
     fetchProduce();
@@ -49,7 +67,7 @@ function MarketplaceContent() {
 
       if (search) params.search = search;
       if (selectedCategory && selectedCategory !== 'ALL') params.category = selectedCategory;
-      if (selectedLocation && selectedLocation !== 'All Locations') params.location = selectedLocation;
+      if (selectedLocation) params.location = selectedLocation;
       if (selectedGrade && selectedGrade !== 'ALL') params.qualityGrade = selectedGrade;
       if (maxPrice !== '') params.maxPrice = String(maxPrice);
 
@@ -72,7 +90,7 @@ function MarketplaceContent() {
   const resetFilters = () => {
     setSearch('');
     setSelectedCategory('ALL');
-    setSelectedLocation('All Locations');
+    setSelectedLocation('');
     setSelectedGrade('ALL');
     setMaxPrice('');
     setSortBy('harvest_recent');
@@ -85,16 +103,16 @@ function MarketplaceContent() {
         <div>
           <div className="flex items-center gap-2 text-emerald-200 text-xs font-bold uppercase tracking-wider mb-1">
             <Sparkles className="w-4 h-4 text-emerald-300" />
-            Direct Mandi Catalog
+            {t('market.catalogBadge')}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black">Farmer Marketplace</h1>
+          <h1 className="text-2xl sm:text-3xl font-black">{t('market.title')}</h1>
           <p className="text-xs sm:text-sm text-emerald-100 max-w-xl mt-1">
-            Plucked fresh from Indian farms. Zero commission markups, 100% verified farmer source.
+            {t('market.subtitle')}
           </p>
         </div>
 
         <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20 text-xs">
-          <span className="font-bold text-emerald-200">{produceList.length}</span> Active Farm Listings Available
+          <span className="font-bold text-emerald-200">{produceList.length}</span> {t('market.activeListings')}
         </div>
       </div>
 
@@ -102,15 +120,15 @@ function MarketplaceContent() {
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
         {categories.map((cat) => (
           <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
+            key={cat.key}
+            onClick={() => setSelectedCategory(cat.key)}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 ${
-              selectedCategory === cat
+              selectedCategory === cat.key
                 ? 'bg-emerald-600 text-white shadow-md'
                 : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
             }`}
           >
-            {cat === 'ALL' ? '🌾 All Crops' : cat}
+            {cat.key === 'ALL' ? `🌾 ${cat.label}` : cat.label}
           </button>
         ))}
       </div>
@@ -123,7 +141,7 @@ function MarketplaceContent() {
             <Search className="w-4 h-4 text-gray-400 absolute left-3 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search by crop name, farmer, or city..."
+              placeholder={t('market.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-500 outline-none"
@@ -139,8 +157,8 @@ function MarketplaceContent() {
               className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-500 outline-none bg-white text-gray-700"
             >
               {locations.map((loc) => (
-                <option key={loc} value={loc}>
-                  {loc}
+                <option key={loc.key} value={loc.key}>
+                  {loc.label}
                 </option>
               ))}
             </select>
@@ -154,10 +172,10 @@ function MarketplaceContent() {
               onChange={(e) => setSelectedGrade(e.target.value)}
               className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-500 outline-none bg-white text-gray-700"
             >
-              <option value="ALL">All Quality Grades</option>
-              <option value="Grade A">Grade A (Premium)</option>
-              <option value="Organic Certified">Organic Certified</option>
-              <option value="Grade B">Grade B</option>
+              <option value="ALL">{t('market.allGrades')}</option>
+              <option value="Grade A">{t('market.gradeA')}</option>
+              <option value="Organic Certified">{t('market.organic')}</option>
+              <option value="Grade B">{t('market.gradeB')}</option>
             </select>
           </div>
 
@@ -169,9 +187,9 @@ function MarketplaceContent() {
               onChange={(e) => setSortBy(e.target.value)}
               className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-500 outline-none bg-white text-gray-700"
             >
-              <option value="harvest_recent">Recent Harvest</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
+              <option value="harvest_recent">{t('market.recentHarvest')}</option>
+              <option value="price_asc">{t('market.priceLowHigh')}</option>
+              <option value="price_desc">{t('market.priceHighLow')}</option>
             </select>
           </div>
         </div>
@@ -179,13 +197,13 @@ function MarketplaceContent() {
         {/* Active filters & Reset */}
         <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs text-gray-500">
           <div className="flex items-center gap-2">
-            <span>Showing {produceList.length} verified listings</span>
+            <span>{t('market.showingListings')} ({produceList.length})</span>
           </div>
           <button
             onClick={resetFilters}
             className="flex items-center gap-1 text-emerald-700 hover:text-emerald-900 font-semibold"
           >
-            <RotateCcw className="w-3.5 h-3.5" /> Reset Filters
+            <RotateCcw className="w-3.5 h-3.5" /> {t('market.resetFilters')}
           </button>
         </div>
       </div>
@@ -202,15 +220,15 @@ function MarketplaceContent() {
           <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
             <Filter className="w-8 h-8" />
           </div>
-          <h3 className="text-base font-bold text-gray-900">No matching produce found</h3>
+          <h3 className="text-base font-bold text-gray-900">{t('market.noProduceFound')}</h3>
           <p className="text-xs text-gray-500 max-w-sm mx-auto">
-            Try adjusting your search criteria, category filters, or location to see more fresh farmer listings.
+            {t('market.noProduceDesc')}
           </p>
           <button
             onClick={resetFilters}
             className="mt-2 px-4 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow hover:bg-emerald-700 transition"
           >
-            Clear All Filters
+            {t('market.clearAllFilters')}
           </button>
         </div>
       ) : (

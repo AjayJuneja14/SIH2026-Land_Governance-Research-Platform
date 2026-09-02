@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { api } from '../../lib/api';
 import { Produce, Order } from '../../lib/types';
 import { formatCurrency, formatDate, getStatusBadgeClass } from '../../lib/utils';
@@ -18,14 +19,13 @@ import {
   Truck,
   Edit,
   Trash2,
-  AlertCircle,
   Layers,
-  ArrowRight,
   ShieldAlert,
 } from 'lucide-react';
 
 export default function FarmerDashboardPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const router = useRouter();
 
   const [farmerProduce, setFarmerProduce] = useState<Produce[]>([]);
@@ -37,16 +37,12 @@ export default function FarmerDashboardPage() {
   const [activeTab, setActiveTab] = useState<'listings' | 'orders'>('listings');
 
   useEffect(() => {
-    if (user && user.role !== 'FARMER' && user.role !== 'ADMIN') {
-      // If buyer, prompt or allow viewing with demo switch
-    }
     loadData();
   }, [user]);
 
   const loadData = async () => {
     try {
       setLoading(true);
-      // If logged in as farmer, fetch farmer-specific produce and orders
       if (user?.id) {
         const produceRes = await api.getAllProduce({ farmerId: user.id });
         if (produceRes.success && produceRes.data) {
@@ -58,7 +54,6 @@ export default function FarmerDashboardPage() {
           setOrders(ordersRes.data);
         }
       } else {
-        // Fallback demo farmer produce
         const produceRes = await api.getAllProduce();
         if (produceRes.success && produceRes.data) {
           setFarmerProduce(produceRes.data.slice(0, 4));
@@ -113,13 +108,13 @@ export default function FarmerDashboardPage() {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-xs font-bold text-emerald-300 uppercase tracking-wider">
             <Sprout className="w-4 h-4" />
-            Farmer Command Center
+            {t('farmer.dashboardTitle')}
           </div>
           <h1 className="text-2xl sm:text-3xl font-black">
             Welcome, {user ? user.name : 'Farmer'}
           </h1>
           <p className="text-xs sm:text-sm text-emerald-100 max-w-xl">
-            {user?.location || 'Nashik, Maharashtra'} • Manage your harvest stock, track direct incoming orders, and set your own prices.
+            {t('farmer.dashboardSubtitle')}
           </p>
         </div>
 
@@ -127,7 +122,7 @@ export default function FarmerDashboardPage() {
           onClick={() => setIsAddModalOpen(true)}
           className="px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-black text-xs rounded-2xl shadow-lg hover:shadow-xl transition flex items-center gap-2 shrink-0"
         >
-          <Plus className="w-4 h-4" /> List New Harvest Crop
+          <Plus className="w-4 h-4" /> {t('farmer.addListing')}
         </button>
       </div>
 
@@ -137,7 +132,7 @@ export default function FarmerDashboardPage() {
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
             <span>
-              You are currently logged in as <strong>{user.name} (Role: {user.role})</strong>. Use the <strong>Demo Switcher</strong> at the top right to switch to a Farmer account (e.g. Ramesh Kumar).
+              You are currently logged in as <strong>{user.name} (Role: {user.role})</strong>. Use the <strong>Demo Switcher</strong> at the top right to switch to a Farmer account.
             </span>
           </div>
         </div>
@@ -147,7 +142,7 @@ export default function FarmerDashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
-            <span>Active Listings</span>
+            <span>{t('farmer.totalListings')}</span>
             <Package className="w-4 h-4 text-emerald-600" />
           </div>
           <div className="text-2xl font-black text-gray-900">{activeListingsCount}</div>
@@ -165,7 +160,7 @@ export default function FarmerDashboardPage() {
 
         <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
-            <span>Orders in Progress</span>
+            <span>{t('farmer.totalOrders')}</span>
             <Clock className="w-4 h-4 text-amber-600" />
           </div>
           <div className="text-2xl font-black text-amber-600">{pendingOrdersCount}</div>
@@ -174,7 +169,7 @@ export default function FarmerDashboardPage() {
 
         <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
-            <span>Direct Farmer Payouts</span>
+            <span>{t('farmer.totalRevenue')}</span>
             <TrendingUp className="w-4 h-4 text-emerald-600" />
           </div>
           <div className="text-2xl font-black text-emerald-700">{formatCurrency(totalEarnings)}</div>
@@ -193,7 +188,7 @@ export default function FarmerDashboardPage() {
           }`}
         >
           <Package className="w-4 h-4" />
-          My Crop Listings ({farmerProduce.length})
+          {t('farmer.myProduce')} ({farmerProduce.length})
         </button>
 
         <button
@@ -205,7 +200,7 @@ export default function FarmerDashboardPage() {
           }`}
         >
           <Truck className="w-4 h-4" />
-          Incoming Buyer Orders ({orders.length})
+          {t('farmer.incomingOrders')} ({orders.length})
         </button>
       </div>
 
@@ -213,12 +208,12 @@ export default function FarmerDashboardPage() {
       {activeTab === 'listings' && (
         <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-bold text-gray-900 text-base">Crop Inventory Management</h3>
+            <h3 className="font-bold text-gray-900 text-base">{t('farmer.myProduce')}</h3>
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="text-xs font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1"
             >
-              <Plus className="w-3.5 h-3.5" /> Add Listing
+              <Plus className="w-3.5 h-3.5" /> {t('farmer.addListing')}
             </button>
           </div>
 
@@ -240,7 +235,7 @@ export default function FarmerDashboardPage() {
                 {farmerProduce.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="text-center py-12 text-gray-400">
-                      No produce listings yet. Click "List New Harvest Crop" to add your first harvest!
+                      No produce listings yet. Click "{t('farmer.addListing')}" to add your first harvest!
                     </td>
                   </tr>
                 ) : (
@@ -310,7 +305,7 @@ export default function FarmerDashboardPage() {
       {activeTab === 'orders' && (
         <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="p-4 sm:p-6 border-b border-gray-100">
-            <h3 className="font-bold text-gray-900 text-base">Direct Buyer Orders</h3>
+            <h3 className="font-bold text-gray-900 text-base">{t('farmer.incomingOrders')}</h3>
             <p className="text-xs text-gray-500">Dispatch crops to pickup hub or directly to buyer</p>
           </div>
 

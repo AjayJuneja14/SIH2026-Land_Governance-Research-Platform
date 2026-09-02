@@ -4,11 +4,13 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
-import { Sprout, LogIn, Sparkles, Shield, ShoppingBag, AlertCircle, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
+import { Sprout, LogIn, Sparkles, Shield, ShoppingBag, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   const { login, quickSwitchUser } = useAuth();
+  const { t } = useLanguage();
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -74,7 +76,7 @@ export default function LoginPage() {
           <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center mx-auto shadow-md">
             <Sprout className="w-7 h-7" />
           </div>
-          <h2 className="text-2xl font-black text-gray-900">Sign in to KisanConnect</h2>
+          <h2 className="text-2xl font-black text-gray-900">{t('auth.loginTitle')}</h2>
           <p className="text-xs text-gray-500">
             Access your direct farmer dashboard or buyer marketplace
           </p>
@@ -136,12 +138,12 @@ export default function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-gray-800 mb-1">
-                Phone Number or Email
+                {t('auth.phone')} / {t('auth.email')}
               </label>
               <input
                 type="text"
                 required
-                placeholder="e.g. 9820011111 or ramesh.patil@kisan.in"
+                placeholder="e.g. 9820011111"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-500 outline-none"
@@ -149,7 +151,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-800 mb-1">Password</label>
+              <label className="block text-xs font-bold text-gray-800 mb-1">{t('auth.password')}</label>
               <input
                 type="password"
                 required
@@ -166,14 +168,14 @@ export default function LoginPage() {
               className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2"
             >
               <LogIn className="w-4 h-4" />
-              {loading ? 'Authenticating...' : 'Sign In'}
+              {loading ? 'Authenticating...' : t('auth.login')}
             </button>
           </form>
 
           <div className="text-center pt-2 border-t border-gray-100 text-xs text-gray-500">
-            Don't have an account yet?{' '}
+            {t('auth.dontHaveAccount')}{' '}
             <Link href="/register" className="font-bold text-emerald-700 hover:underline">
-              Create New Account
+              {t('auth.register')}
             </Link>
           </div>
         </div>

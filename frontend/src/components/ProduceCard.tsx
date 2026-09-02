@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Produce } from '../lib/types';
 import { formatCurrency, formatDate } from '../lib/utils';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import PriceTransparencyWidget from './PriceTransparencyWidget';
 import { MapPin, Calendar, ShoppingCart, Check, Sparkles, UserCheck } from 'lucide-react';
 
@@ -14,6 +15,7 @@ interface ProduceCardProps {
 
 export default function ProduceCard({ produce }: ProduceCardProps) {
   const { addToCart, items } = useCart();
+  const { t } = useLanguage();
   const isAvailable = produce.status === 'AVAILABLE' && produce.quantity > 0;
   const inCartItem = items.find((i) => i.produce.id === produce.id);
 
@@ -43,7 +45,7 @@ export default function ProduceCard({ produce }: ProduceCardProps) {
         {!isAvailable && (
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
             <span className="bg-red-600 text-white font-bold text-xs uppercase tracking-wider px-3 py-1.5 rounded-lg shadow">
-              Sold Out
+              {t('produce.soldOut')}
             </span>
           </div>
         )}
@@ -56,7 +58,7 @@ export default function ProduceCard({ produce }: ProduceCardProps) {
           <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
             <div className="flex items-center gap-1 font-medium text-emerald-800 truncate">
               <UserCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span className="truncate">{produce.farmer?.name || 'Local Farmer'}</span>
+              <span className="truncate">{produce.farmer?.name || t('produce.verifiedFarmer')}</span>
             </div>
             <div className="flex items-center gap-1 text-[11px] text-gray-500 shrink-0">
               <MapPin className="w-3 h-3 text-gray-400" />
@@ -75,11 +77,11 @@ export default function ProduceCard({ produce }: ProduceCardProps) {
           <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
             <span className="flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5 text-gray-400" />
-              Fresh: {formatDate(produce.harvestDate)}
+              {t('produce.fresh')}: {formatDate(produce.harvestDate)}
             </span>
             <span>•</span>
             <span className={produce.quantity < 50 ? 'text-amber-600 font-semibold' : 'text-gray-600'}>
-              {produce.quantity} {produce.unit} in stock
+              {produce.quantity} {produce.unit} {t('produce.inStock')}
             </span>
           </div>
 
@@ -92,7 +94,7 @@ export default function ProduceCard({ produce }: ProduceCardProps) {
         {/* Bottom Actions */}
         <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-2">
           <div>
-            <div className="text-[11px] text-gray-400 font-medium">Direct Price</div>
+            <div className="text-[11px] text-gray-400 font-medium">{t('produce.directPrice')}</div>
             <div className="text-xl font-black text-gray-900 leading-tight">
               {formatCurrency(produce.pricePerUnit)}
               <span className="text-xs font-normal text-gray-500">/{produce.unit}</span>
@@ -104,7 +106,7 @@ export default function ProduceCard({ produce }: ProduceCardProps) {
               href={`/produce/${produce.id}`}
               className="px-3 py-2 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition"
             >
-              Details
+              {t('produce.details')}
             </Link>
 
             {isAvailable && (
@@ -119,12 +121,12 @@ export default function ProduceCard({ produce }: ProduceCardProps) {
                 {inCartItem ? (
                   <>
                     <Check className="w-3.5 h-3.5" />
-                    Added ({inCartItem.quantity})
+                    {t('produce.added')} ({inCartItem.quantity})
                   </>
                 ) : (
                   <>
                     <ShoppingCart className="w-3.5 h-3.5" />
-                    Add
+                    {t('produce.add')}
                   </>
                 )}
               </button>

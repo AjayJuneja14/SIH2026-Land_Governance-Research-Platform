@@ -4,12 +4,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage, LANGUAGES } from '../../context/LanguageContext';
 import { Sprout, ShoppingBag, UserPlus, AlertCircle } from 'lucide-react';
 import { Role } from '../../lib/types';
 
 export default function RegisterPage() {
   const router = useRouter();
   const { register } = useAuth();
+  const { t, language: currentAppLang, setLanguage: setAppLanguage } = useLanguage();
 
   const [role, setRole] = useState<Role>('FARMER');
   const [name, setName] = useState('');
@@ -17,7 +19,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [location, setLocation] = useState('');
-  const [language, setLanguage] = useState('en');
+  const [selectedLang, setSelectedLang] = useState(currentAppLang);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -34,7 +36,7 @@ export default function RegisterPage() {
       password,
       role,
       location,
-      language,
+      language: selectedLang,
     });
 
     setLoading(false);
@@ -58,7 +60,7 @@ export default function RegisterPage() {
           <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center mx-auto shadow-md">
             <Sprout className="w-7 h-7" />
           </div>
-          <h2 className="text-2xl font-black text-gray-900">Create KisanConnect Account</h2>
+          <h2 className="text-2xl font-black text-gray-900">{t('auth.registerTitle')}</h2>
           <p className="text-xs text-gray-500">
             Join thousands of Indian farmers and buyers trading directly
           </p>
@@ -75,7 +77,7 @@ export default function RegisterPage() {
           <form onSubmit={handleRegister} className="space-y-4">
             {/* Role Switcher */}
             <div>
-              <label className="block text-xs font-bold text-gray-800 mb-1">I am joining as a:</label>
+              <label className="block text-xs font-bold text-gray-800 mb-1">{t('auth.role')}</label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
@@ -87,7 +89,7 @@ export default function RegisterPage() {
                   }`}
                 >
                   <Sprout className="w-5 h-5 text-emerald-600" />
-                  <span className="text-xs">Farmer / Grower</span>
+                  <span className="text-xs">{t('auth.farmer')}</span>
                 </button>
 
                 <button
@@ -100,14 +102,14 @@ export default function RegisterPage() {
                   }`}
                 >
                   <ShoppingBag className="w-5 h-5 text-emerald-600" />
-                  <span className="text-xs">Buyer / Consumer</span>
+                  <span className="text-xs">{t('auth.buyer')}</span>
                 </button>
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-gray-800 mb-1">
-                Full Name <span className="text-red-500">*</span>
+                {t('auth.name')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -122,7 +124,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold text-gray-800 mb-1">
-                  Phone Number <span className="text-red-500">*</span>
+                  {t('auth.phone')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="tel"
@@ -136,7 +138,7 @@ export default function RegisterPage() {
 
               <div>
                 <label className="block text-xs font-bold text-gray-800 mb-1">
-                  Email (Optional)
+                  {t('auth.email')}
                 </label>
                 <input
                   type="email"
@@ -150,7 +152,7 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-xs font-bold text-gray-800 mb-1">
-                Password <span className="text-red-500">*</span>
+                {t('auth.password')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="password"
@@ -165,7 +167,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold text-gray-800 mb-1">
-                  Location (City, State) <span className="text-red-500">*</span>
+                  {t('auth.location')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -178,17 +180,20 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-800 mb-1">Language</label>
+                <label className="block text-xs font-bold text-gray-800 mb-1">{t('auth.language')}</label>
                 <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
+                  value={selectedLang}
+                  onChange={(e) => {
+                    setSelectedLang(e.target.value as any);
+                    setAppLanguage(e.target.value as any);
+                  }}
                   className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-500 outline-none bg-white"
                 >
-                  <option value="en">English</option>
-                  <option value="hi">हिंदी (Hindi)</option>
-                  <option value="mr">मराठी (Marathi)</option>
-                  <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
-                  <option value="te">తెలుగు (Telugu)</option>
+                  {LANGUAGES.map((l) => (
+                    <option key={l.code} value={l.code}>
+                      {l.flag} {l.label} ({l.labelEn})
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -199,14 +204,14 @@ export default function RegisterPage() {
               className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2"
             >
               <UserPlus className="w-4 h-4" />
-              {loading ? 'Creating Account...' : 'Register Account'}
+              {loading ? 'Creating Account...' : t('auth.register')}
             </button>
           </form>
 
           <div className="text-center pt-2 border-t border-gray-100 text-xs text-gray-500">
-            Already have an account?{' '}
+            {t('auth.alreadyHaveAccount')}{' '}
             <Link href="/login" className="font-bold text-emerald-700 hover:underline">
-              Sign In Here
+              {t('auth.login')}
             </Link>
           </div>
         </div>

@@ -5,17 +5,16 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { api } from '../../lib/api';
 import { Hub } from '../../lib/types';
 import { formatCurrency } from '../../lib/utils';
 import {
   ShoppingBag,
   Truck,
-  MapPin,
   ShieldCheck,
   CheckCircle2,
   ArrowLeft,
-  CreditCard,
   Building2,
   AlertCircle,
   Clock,
@@ -25,6 +24,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { items, cartTotal, clearCart } = useCart();
+  const { t } = useLanguage();
 
   const [deliveryType, setDeliveryType] = useState<'DOORSTEP' | 'HUB_PICKUP'>('DOORSTEP');
   const [address, setAddress] = useState(user?.location || 'Flat 402, Green Acre Heights, Kothrud, Pune - 411038');
@@ -53,13 +53,13 @@ export default function CheckoutPage() {
         <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
           <ShoppingBag className="w-8 h-8" />
         </div>
-        <h3 className="text-lg font-bold text-gray-900">Your Basket is Empty</h3>
-        <p className="text-xs text-gray-500">Please add items from the marketplace before checking out.</p>
+        <h3 className="text-lg font-bold text-gray-900">{t('cart.emptyTitle')}</h3>
+        <p className="text-xs text-gray-500">{t('cart.emptyDesc')}</p>
         <Link
           href="/marketplace"
           className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl"
         >
-          <ArrowLeft className="w-3.5 h-3.5" /> Return to Marketplace
+          <ArrowLeft className="w-3.5 h-3.5" /> {t('checkout.backToMarket')}
         </Link>
       </div>
     );
@@ -120,28 +120,27 @@ export default function CheckoutPage() {
 
         <div className="space-y-2">
           <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            Order Confirmed & Logged
+            {t('checkout.orderConfirmed')}
           </span>
-          <h2 className="text-2xl sm:text-3xl font-black text-gray-900">Thank You for Supporting Indian Farmers!</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900">{t('checkout.thankYouTitle')}</h2>
           <p className="text-xs sm:text-sm text-gray-600 max-w-md mx-auto">
-            Your direct harvest order has been routed to the local aggregation hub. 
-            The farmer has been notified and 100% of the produce payment is secured for payout.
+            {t('checkout.thankYouSubtitle')}
           </p>
         </div>
 
         <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-xs text-gray-700 space-y-2 text-left max-w-md mx-auto">
           <div className="flex justify-between font-bold">
-            <span>Orders Placed:</span>
-            <span>{createdOrderIds.length} item(s)</span>
+            <span>{t('checkout.ordersPlaced')}</span>
+            <span>{createdOrderIds.length} {t('checkout.crops')}</span>
           </div>
           <div className="flex justify-between text-gray-500">
-            <span>Payment Method:</span>
-            <span className="font-semibold text-gray-800">{paymentMethod === 'COD' ? 'Cash on Delivery' : 'Online Paid'}</span>
+            <span>{t('checkout.paymentMethod')}</span>
+            <span className="font-semibold text-gray-800">{paymentMethod === 'COD' ? t('checkout.cod') : t('checkout.online')}</span>
           </div>
           <div className="flex justify-between text-gray-500">
-            <span>Dispatch Timeline:</span>
+            <span>{t('checkout.dispatchTimeline')}</span>
             <span className="font-semibold text-emerald-700 flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" /> Within 24-48 Hours
+              <Clock className="w-3.5 h-3.5" /> {t('checkout.within2448')}
             </span>
           </div>
         </div>
@@ -151,13 +150,13 @@ export default function CheckoutPage() {
             href="/orders"
             className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition"
           >
-            Track in My Orders
+            {t('checkout.trackOrders')}
           </Link>
           <Link
             href="/marketplace"
             className="w-full sm:w-auto px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition"
           >
-            Continue Shopping
+            {t('checkout.continueShopping')}
           </Link>
         </div>
       </div>
@@ -173,7 +172,7 @@ export default function CheckoutPage() {
         href="/marketplace"
         className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 hover:text-emerald-950 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 transition"
       >
-        <ArrowLeft className="w-3.5 h-3.5" /> Back to Marketplace
+        <ArrowLeft className="w-3.5 h-3.5" /> {t('checkout.backToMarket')}
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -185,8 +184,8 @@ export default function CheckoutPage() {
                 <Truck className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900">Delivery & Pickup Preferences</h2>
-                <p className="text-xs text-gray-500">Choose doorstep delivery or self-pickup from local hub</p>
+                <h2 className="text-lg font-bold text-gray-900">{t('checkout.title')}</h2>
+                <p className="text-xs text-gray-500">{t('checkout.subtitle')}</p>
               </div>
             </div>
 
@@ -210,9 +209,9 @@ export default function CheckoutPage() {
               >
                 <div className="flex items-center gap-2 font-bold text-xs mb-1">
                   <Truck className="w-4 h-4 text-emerald-600" />
-                  Doorstep Delivery
+                  {t('checkout.doorstepDelivery')}
                 </div>
-                <p className="text-[11px] text-gray-500">Direct courier from local aggregation hub to your home</p>
+                <p className="text-[11px] text-gray-500">{t('checkout.doorstepDesc')}</p>
               </button>
 
               <button
@@ -226,9 +225,9 @@ export default function CheckoutPage() {
               >
                 <div className="flex items-center gap-2 font-bold text-xs mb-1">
                   <Building2 className="w-4 h-4 text-emerald-600" />
-                  Local Hub Pickup
+                  {t('checkout.hubPickup')}
                 </div>
-                <p className="text-[11px] text-gray-500">Collect directly from local Kisan Hub & save time</p>
+                <p className="text-[11px] text-gray-500">{t('checkout.hubPickupDesc')}</p>
               </button>
             </div>
 
@@ -236,12 +235,12 @@ export default function CheckoutPage() {
             {deliveryType === 'DOORSTEP' ? (
               <div className="space-y-3">
                 <label className="block text-xs font-bold text-gray-800">
-                  Full Delivery Address <span className="text-red-500">*</span>
+                  {t('checkout.fullAddress')} <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   rows={3}
                   required
-                  placeholder="Street, Building name, Flat number, Area, City, Pin Code"
+                  placeholder={t('checkout.addressPlaceholder')}
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-500 outline-none"
@@ -250,7 +249,7 @@ export default function CheckoutPage() {
             ) : (
               <div className="space-y-3">
                 <label className="block text-xs font-bold text-gray-800">
-                  Select Collection Hub <span className="text-red-500">*</span>
+                  {t('checkout.selectHub')} <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={selectedHubId}
@@ -268,7 +267,7 @@ export default function CheckoutPage() {
 
             {/* Payment Method */}
             <div className="space-y-3 pt-2 border-t border-gray-100">
-              <label className="block text-xs font-bold text-gray-800">Payment Option</label>
+              <label className="block text-xs font-bold text-gray-800">{t('checkout.paymentOption')}</label>
               <div className="grid grid-cols-2 gap-3">
                 <label
                   className={`flex items-center gap-2 p-3.5 rounded-xl border text-xs font-bold cursor-pointer transition ${
@@ -284,7 +283,7 @@ export default function CheckoutPage() {
                     onChange={() => setPaymentMethod('COD')}
                     className="accent-emerald-600"
                   />
-                  <span>Cash on Delivery (COD)</span>
+                  <span>{t('checkout.cod')}</span>
                 </label>
 
                 <label
@@ -301,7 +300,7 @@ export default function CheckoutPage() {
                     onChange={() => setPaymentMethod('ONLINE')}
                     className="accent-emerald-600"
                   />
-                  <span>UPI / Net Banking (Instant)</span>
+                  <span>{t('checkout.online')}</span>
                 </label>
               </div>
             </div>
@@ -309,13 +308,13 @@ export default function CheckoutPage() {
             {/* Buyer Contact Summary */}
             <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 text-xs text-gray-600 flex items-center justify-between">
               <div>
-                <span className="text-gray-400 block text-[11px]">Ordering As:</span>
-                <strong className="text-gray-900">{user ? user.name : 'Guest (Please Sign In)'}</strong>
+                <span className="text-gray-400 block text-[11px]">{t('checkout.orderingAs')}</span>
+                <strong className="text-gray-900">{user ? user.name : 'Guest'}</strong>
                 <span className="text-gray-500 block text-[11px]">{user?.phone}</span>
               </div>
               <div className="text-right">
                 <span className="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded text-[10px]">
-                  Verified Account
+                  {t('checkout.verifiedAccount')}
                 </span>
               </div>
             </div>
@@ -326,7 +325,7 @@ export default function CheckoutPage() {
         <div className="lg:col-span-5 space-y-4">
           <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm space-y-4">
             <h3 className="text-base font-bold text-gray-900 pb-3 border-b border-gray-100">
-              Order Breakdown ({items.length} crops)
+              {t('checkout.orderBreakdown')} ({items.length} {t('checkout.crops')})
             </h3>
 
             <div className="divide-y divide-gray-100 max-h-64 overflow-y-auto space-y-2">
@@ -355,15 +354,15 @@ export default function CheckoutPage() {
             {/* Price Calculations */}
             <div className="pt-3 border-t border-gray-100 space-y-1.5 text-xs text-gray-600">
               <div className="flex justify-between">
-                <span>Farmer Direct Share:</span>
+                <span>{t('checkout.farmerDirectShare')}</span>
                 <span className="font-semibold text-gray-900">{formatCurrency(cartTotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Hub Quality & Handling:</span>
+                <span>{t('checkout.hubHandling')}</span>
                 <span className="font-semibold text-gray-900">{formatCurrency(handlingFee)}</span>
               </div>
               <div className="flex justify-between text-sm font-black text-gray-900 pt-2 border-t border-gray-200">
-                <span>Total Amount:</span>
+                <span>{t('checkout.totalAmount')}</span>
                 <span className="text-emerald-700">{formatCurrency(grandTotal)}</span>
               </div>
             </div>
@@ -372,7 +371,7 @@ export default function CheckoutPage() {
             <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-[11px] text-emerald-900 flex items-start gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <span>
-                <strong>Direct Payout Model:</strong> {formatCurrency(cartTotal)} goes straight to the farmer's account with zero middleman deductions.
+                <strong>{t('checkout.directPayoutModel')}</strong> {formatCurrency(cartTotal)} {t('checkout.directPayoutDesc')}
               </span>
             </div>
 
@@ -382,7 +381,7 @@ export default function CheckoutPage() {
               disabled={loading}
               className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-2"
             >
-              {loading ? 'Confirming Order...' : `Place Direct Order • ${formatCurrency(grandTotal)}`}
+              {loading ? t('checkout.confirming') : `${t('checkout.placeOrder')} • ${formatCurrency(grandTotal)}`}
             </button>
           </div>
         </div>

@@ -3,11 +3,13 @@
 import React from 'react';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import { formatCurrency } from '../lib/utils';
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 
 export default function CartDrawer() {
   const { items, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
+  const { t } = useLanguage();
 
   if (!isCartOpen) return null;
 
@@ -25,7 +27,7 @@ export default function CartDrawer() {
           <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-5 h-5 text-emerald-600" />
-              <h2 className="text-base font-bold text-gray-900">Your Direct Farm Basket</h2>
+              <h2 className="text-base font-bold text-gray-900">{t('cart.title')}</h2>
               <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
                 {items.length} {items.length === 1 ? 'item' : 'items'}
               </span>
@@ -45,16 +47,16 @@ export default function CartDrawer() {
                 <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
                   <ShoppingBag className="w-8 h-8" />
                 </div>
-                <h3 className="font-bold text-gray-900">Your basket is empty</h3>
+                <h3 className="font-bold text-gray-900">{t('cart.emptyTitle')}</h3>
                 <p className="text-xs text-gray-500 max-w-xs">
-                  Support local farmers by browsing fresh vegetables, grains, fruits, and spices.
+                  {t('cart.emptyDesc')}
                 </p>
                 <Link
                   href="/marketplace"
                   onClick={() => setIsCartOpen(false)}
                   className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow hover:bg-emerald-700 transition"
                 >
-                  Browse Marketplace <ArrowRight className="w-3.5 h-3.5" />
+                  {t('cart.browseButton')} <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             ) : (
@@ -71,7 +73,7 @@ export default function CartDrawer() {
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs font-bold text-gray-900 truncate">{produce.name}</h4>
                     <p className="text-[11px] text-gray-500 truncate">
-                      Farmer: {produce.farmer?.name || 'Verified Farmer'}
+                      {produce.farmer?.name || 'Verified Farmer'}
                     </p>
                     <div className="text-xs font-extrabold text-emerald-700 mt-1">
                       {formatCurrency(produce.pricePerUnit)}
@@ -122,15 +124,15 @@ export default function CartDrawer() {
             <div className="p-4 sm:p-6 border-t border-gray-100 bg-gray-50 space-y-3">
               <div className="space-y-1 text-xs">
                 <div className="flex justify-between text-gray-600">
-                  <span>Farmer Payout Subtotal:</span>
+                  <span>{t('cart.farmerPayoutSubtotal')}</span>
                   <span className="font-semibold text-gray-900">{formatCurrency(cartTotal)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Direct Hub Logistics (est.):</span>
-                  <span className="font-semibold text-emerald-700">₹40 (Flat)</span>
+                  <span>{t('cart.hubLogistics')}</span>
+                  <span className="font-semibold text-emerald-700">{t('cart.flatRate')}</span>
                 </div>
                 <div className="flex justify-between text-sm font-black text-gray-900 pt-2 border-t border-gray-200">
-                  <span>Estimated Total:</span>
+                  <span>{t('cart.estimatedTotal')}</span>
                   <span className="text-emerald-700">{formatCurrency(cartTotal + 40)}</span>
                 </div>
               </div>
@@ -140,14 +142,14 @@ export default function CartDrawer() {
                   onClick={clearCart}
                   className="px-3 py-2.5 text-xs text-gray-500 hover:text-red-600 font-medium"
                 >
-                  Clear
+                  {t('cart.clear')}
                 </button>
                 <Link
                   href="/checkout"
                   onClick={() => setIsCartOpen(false)}
                   className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md text-center flex items-center justify-center gap-2 transition"
                 >
-                  Proceed to Direct Checkout <ArrowRight className="w-4 h-4" />
+                  {t('cart.checkoutButton')} <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
