@@ -1,252 +1,173 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { api } from '../lib/api';
-import { Produce } from '../lib/types';
-import ProduceCard from '../components/ProduceCard';
-import PriceTransparencyWidget from '../components/PriceTransparencyWidget';
-import { useLanguage } from '../context/LanguageContext';
-import {
-  Sprout,
-  ArrowRight,
-  ShieldCheck,
-  Search,
-  CheckCircle2,
-  Sparkles,
+import { useChat } from '@/context/ChatContext';
+import { 
+  Building2, ArrowRight, MessageSquare, Map, 
+  SlidersHorizontal, FileText, Database, ShieldCheck, 
+  BarChart3, Users, Lightbulb 
 } from 'lucide-react';
 
-export default function HomePage() {
-  const router = useRouter();
-  const { t } = useLanguage();
-  const [featuredProduce, setFeaturedProduce] = useState<Produce[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+export default function LandingPage() {
+  const { toggleChat, sendMessage } = useChat();
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const res = await api.getAllProduce();
-        if (res.success && res.data) {
-          setFeaturedProduce(res.data.slice(0, 6));
-        }
-      } catch (e) {
-        console.error('Failed to load produce', e);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, []);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/marketplace?search=${encodeURIComponent(searchQuery.trim())}`);
-    }
+  const handleStartStory = async () => {
+    toggleChat();
+    await sendMessage('What are the major land governance challenges in Pune?');
   };
 
-  const categories = [
-    { nameKey: 'cat.vegetables', icon: '🥦', descKey: 'cat.vegetables.desc', name: 'Vegetables' },
-    { nameKey: 'cat.fruits', icon: '🥭', descKey: 'cat.fruits.desc', name: 'Fruits' },
-    { nameKey: 'cat.grains', icon: '🌾', descKey: 'cat.grains.desc', name: 'Grains' },
-    { nameKey: 'cat.spices', icon: '🌶️', descKey: 'cat.spices.desc', name: 'Spices' },
-  ];
-
   return (
-    <div className="space-y-16 pb-16">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-emerald-900 via-emerald-800 to-green-900 text-white pt-16 pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.2),transparent_50%)] pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.15),transparent_50%)] pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center max-w-3xl mx-auto space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-semibold backdrop-blur-sm">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-              <span>{t('hero.badge')}</span>
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
-              {t('hero.titleLine1')} <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-green-200 to-amber-200">
-                {t('hero.titleLine2')}
-              </span>
-            </h1>
-
-            <p className="text-sm sm:text-base text-emerald-100/90 max-w-2xl mx-auto font-normal leading-relaxed">
-              {t('hero.description')}
-            </p>
-
-            {/* Quick Search Bar */}
-            <form onSubmit={handleSearch} className="max-w-xl mx-auto relative mt-4">
-              <div className="flex items-center bg-white rounded-2xl shadow-2xl p-1.5 border-2 border-emerald-400/30">
-                <Search className="w-5 h-5 text-gray-400 ml-3 shrink-0" />
-                <input
-                  type="text"
-                  placeholder={t('hero.searchPlaceholder')}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-3 py-2 text-sm text-gray-900 bg-transparent outline-none placeholder:text-gray-400"
-                />
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow"
-                >
-                  {t('hero.searchButton')}
-                </button>
-              </div>
-            </form>
-
-            {/* Key Value Metric Pills */}
-            <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto text-left">
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10">
-                <div className="text-2xl font-black text-emerald-300">100%</div>
-                <div className="text-[11px] text-emerald-100 font-medium">{t('hero.directPayout')}</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10">
-                <div className="text-2xl font-black text-amber-300">0%</div>
-                <div className="text-[11px] text-emerald-100 font-medium">{t('hero.middlemanMargin')}</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10">
-                <div className="text-2xl font-black text-emerald-300">3 Hubs</div>
-                <div className="text-[11px] text-emerald-100 font-medium">{t('hero.localAggregation')}</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10">
-                <div className="text-2xl font-black text-green-300">Grade A</div>
-                <div className="text-[11px] text-emerald-100 font-medium">{t('hero.inspectedQuality')}</div>
-              </div>
-            </div>
+    <div className="max-w-6xl mx-auto space-y-12 py-4">
+      <section className="bg-slate-900 rounded-2xl text-white p-8 sm:p-12 border border-slate-800 shadow-xl relative overflow-hidden">
+        <div className="absolute -right-16 -top-16 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="relative z-10 max-w-3xl space-y-6">
+          <div className="inline-flex items-center space-x-2 bg-blue-950/80 border border-blue-700/60 px-3 py-1 rounded-full text-xs text-blue-300">
+            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+            <span>SIH 2026 Problem Statement SIH26019 &bull; Pilot Deployment</span>
           </div>
-        </div>
-      </section>
 
-      {/* Category Shortcuts */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {categories.map((cat) => (
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+            Evidence-Based Land Governance for Pune
+          </h1>
+
+          <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+            An AI-powered digital ecosystem connecting research, geospatial intelligence, 
+            cadastral data, policy innovation, and decision support for Pune District, Maharashtra.
+          </p>
+
+          <div className="flex flex-wrap gap-3 pt-2">
             <Link
-              key={cat.name}
-              href={`/marketplace?category=${cat.name}`}
-              className="group bg-white rounded-2xl p-5 border border-gray-100 shadow-md hover:shadow-xl hover:border-emerald-500 transition-all duration-300 flex items-center gap-4"
+              href="/dashboard"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-2.5 rounded-lg text-xs shadow-md transition-colors flex items-center space-x-2"
             >
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                {cat.icon}
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 text-sm group-hover:text-emerald-700 transition">
-                  {t(cat.nameKey)}
-                </h3>
-                <p className="text-[11px] text-gray-500 line-clamp-1">{t(cat.descKey)}</p>
-              </div>
+              <span>Explore Pune Dashboard</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
-          ))}
+
+            <button
+              onClick={handleStartStory}
+              className="bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold px-5 py-2.5 rounded-lg text-xs border border-slate-700 transition-colors flex items-center space-x-2"
+            >
+              <MessageSquare className="w-4 h-4 text-blue-400" />
+              <span>Ask LandGov AI</span>
+            </button>
+
+            <Link
+              href="/gis"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold px-5 py-2.5 rounded-lg text-xs border border-slate-700 transition-colors flex items-center space-x-2"
+            >
+              <Map className="w-4 h-4 text-emerald-400" />
+              <span>Explore GIS</span>
+            </Link>
+
+            <Link
+              href="/policy-simulator"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold px-5 py-2.5 rounded-lg text-xs border border-slate-700 transition-colors flex items-center space-x-2"
+            >
+              <SlidersHorizontal className="w-4 h-4 text-amber-400" />
+              <span>Run Policy Simulation</span>
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Price Transparency */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl border border-gray-200 p-6 sm:p-10 shadow-sm">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-5 space-y-4">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
-                <ShieldCheck className="w-3.5 h-3.5" /> {t('price.badge')}
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 leading-tight">
-                {t('price.heading')}
-              </h2>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                {t('price.description')}
-              </p>
+      <section className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 text-center">
+        {[
+          { label: 'RESEARCH', icon: FileText, href: '/research', color: 'text-blue-600' },
+          { label: 'DATASETS', icon: Database, href: '/data-sources', color: 'text-indigo-600' },
+          { label: 'AI ENGINE', icon: MessageSquare, href: '/ai-assistant', color: 'text-purple-600' },
+          { label: 'GIS MAPS', icon: Map, href: '/gis', color: 'text-emerald-600' },
+          { label: 'ANALYTICS', icon: BarChart3, href: '/analytics', color: 'text-cyan-600' },
+          { label: 'SIMULATION', icon: SlidersHorizontal, href: '/policy-simulator', color: 'text-amber-600' },
+          { label: 'COLLABORATE', icon: Users, href: '/collaboration', color: 'text-rose-600' },
+        ].map((mod, idx) => {
+          const Icon = mod.icon;
+          return (
+            <Link
+              key={idx}
+              href={mod.href}
+              className="bg-white p-4 rounded-xl border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all group"
+            >
+              <Icon className={`w-5 h-5 mx-auto mb-2 ${mod.color} group-hover:scale-110 transition-transform`} />
+              <span className="text-[11px] font-bold text-slate-700 tracking-wider">{mod.label}</span>
+            </Link>
+          );
+        })}
+      </section>
 
-              <div className="space-y-2.5 text-xs text-gray-700 pt-2">
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>{t('price.farmerSetsPrice')}</strong> {t('price.farmerSetsPriceDesc')}</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>{t('price.hubFee')}</strong> {t('price.hubFeeDesc')}</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>{t('price.consumerSaves')}</strong> {t('price.consumerSavesDesc')}</span>
-                </div>
-              </div>
+      <section className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-6">
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <h2 className="text-xl font-bold text-slate-900">
+            From Scattered Information to Evidence-Based Decisions
+          </h2>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            The core SIH26019 demonstration workflow integrates natural language inquiries, 
+            geospatial validation, parametric simulation, and interdisciplinary collaboration.
+          </p>
+        </div>
 
-              <div className="pt-2">
-                <Link
-                  href="/marketplace"
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition"
-                >
-                  {t('price.exploreFarm')} <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2 text-xs">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <div className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px]">
+              1
             </div>
+            <h3 className="font-bold text-slate-800">1. Ask & Discover</h3>
+            <p className="text-slate-600 text-[11px]">
+              Ask natural-language questions to LandGov AI to uncover land fragmentation, 7/12 mutation data, and research papers.
+            </p>
+          </div>
 
-            <div className="lg:col-span-7">
-              <PriceTransparencyWidget farmerPrice={30} unit="kg" />
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <div className="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-[10px]">
+              2
             </div>
+            <h3 className="font-bold text-slate-800">2. Visualize in GIS</h3>
+            <p className="text-slate-600 text-[11px]">
+              Click &lsquo;View on Map&rsquo; to instantly isolate peri-urban pressure corridors in Haveli, Mulshi, or Mula-Mutha floodplains.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <div className="w-6 h-6 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center text-[10px]">
+              3
+            </div>
+            <h3 className="font-bold text-slate-800">3. Simulate Policy</h3>
+            <p className="text-slate-600 text-[11px]">
+              Test policy interventions (e.g. 10% urban expansion containment) to calculate preserved cropland and reduced flood risks.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <div className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[10px]">
+              4
+            </div>
+            <h3 className="font-bold text-slate-800">4. Collaborate & Decide</h3>
+            <p className="text-slate-600 text-[11px]">
+              Turn simulation findings directly into active research projects with university and government planning cells.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Featured Harvest Produce */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-gray-200 pb-4">
-          <div>
-            <div className="text-xs font-bold text-emerald-700 uppercase tracking-wider">{t('featured.badge')}</div>
-            <h2 className="text-2xl font-black text-gray-900">{t('featured.heading')}</h2>
+      <section className="p-6 rounded-2xl bg-blue-50/60 border border-blue-200 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2 font-bold text-blue-900 text-sm">
+            <ShieldCheck className="w-5 h-5 text-blue-700" />
+            <span>Scalable National Digital Platform Architecture</span>
           </div>
-          <Link
-            href="/marketplace"
-            className="text-xs font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1"
-          >
-            {t('featured.viewAll')} ({featuredProduce.length}+ {t('featured.items')}) <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          <p className="text-blue-800 text-xs leading-relaxed max-w-2xl">
+            Pune District serves as the initial geographic pilot. The underlying data model supports 
+            seamless hierarchical scaling from Pune &rarr; Maharashtra &rarr; Nationwide without modifying core code.
+          </p>
         </div>
 
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-80 bg-gray-100 rounded-2xl animate-pulse" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredProduce.map((item) => (
-              <ProduceCard key={item.id} produce={item} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* How It Works Section */}
-      <section className="bg-emerald-900 text-white py-16 px-4 sm:px-6 lg:px-8 rounded-3xl max-w-7xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">{t('howItWorks.badge')}</span>
-          <h2 className="text-3xl font-black">{t('howItWorks.heading')}</h2>
-          <p className="text-xs text-emerald-100">{t('howItWorks.description')}</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white font-black flex items-center justify-center text-base">1</div>
-            <h3 className="font-bold text-base text-white">{t('howItWorks.step1Title')}</h3>
-            <p className="text-xs text-emerald-100 leading-relaxed">{t('howItWorks.step1Desc')}</p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white font-black flex items-center justify-center text-base">2</div>
-            <h3 className="font-bold text-base text-white">{t('howItWorks.step2Title')}</h3>
-            <p className="text-xs text-emerald-100 leading-relaxed">{t('howItWorks.step2Desc')}</p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white font-black flex items-center justify-center text-base">3</div>
-            <h3 className="font-bold text-base text-white">{t('howItWorks.step3Title')}</h3>
-            <p className="text-xs text-emerald-100 leading-relaxed">{t('howItWorks.step3Desc')}</p>
-          </div>
-        </div>
+        <Link
+          href="/dashboard"
+          className="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-4 py-2 rounded-lg text-xs transition-colors shrink-0"
+        >
+          Launch Prototype
+        </Link>
       </section>
     </div>
   );

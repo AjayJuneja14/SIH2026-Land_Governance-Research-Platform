@@ -1,16 +1,15 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { AuthProvider } from '../context/AuthContext';
-import { CartProvider } from '../context/CartContext';
-import { LanguageProvider } from '../context/LanguageContext';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import CartDrawer from '../components/CartDrawer';
+import { RoleProvider } from '@/context/RoleContext';
+import { ChatProvider } from '@/context/ChatContext';
+import { ScopeBanner } from '@/components/layout/ScopeBanner';
+import { Navbar } from '@/components/layout/Navbar';
+import { Sidebar } from '@/components/layout/Sidebar';
+import { FloatingChatbot } from '@/components/chatbot/FloatingChatbot';
 
 export const metadata: Metadata = {
-  title: 'KisanConnect — Farmer to Consumer Direct Marketplace',
-  description:
-    'A transparent agricultural marketplace connecting Indian farmers directly with buyers. Fair prices, zero middleman commission, and local hub aggregation.',
+  title: 'LANDGOV PUNE — AI-Powered Land Governance Platform',
+  description: 'National Digital Platform for Research, Policy Innovation, and Evidence-Based Land Governance (SIH26019 Prototype: Pune District)',
 };
 
 export default function RootLayout({
@@ -19,18 +18,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full">
-      <body className="flex flex-col min-h-full font-sans bg-slate-50 text-gray-900">
-        <LanguageProvider>
-          <AuthProvider>
-            <CartProvider>
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <CartDrawer />
-              <Footer />
-            </CartProvider>
-          </AuthProvider>
-        </LanguageProvider>
+    <html lang="en">
+      <body className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans antialiased">
+        <RoleProvider>
+          <ChatProvider>
+            <ScopeBanner />
+            <Navbar />
+            <div className="flex flex-1 overflow-hidden">
+              <Sidebar />
+              <main className="flex-1 overflow-y-auto min-h-[calc(100vh-6.5rem)] bg-slate-50/70 p-4 sm:p-6 lg:p-8">
+                {children}
+              </main>
+            </div>
+            <FloatingChatbot />
+          </ChatProvider>
+        </RoleProvider>
       </body>
     </html>
   );
